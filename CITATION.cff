@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use Med-AGCNet in your research, please cite this software."
+title: "Med-AGCNet: Adaptive Global Context Network for Medical Image Classification"
+type: software
+
+authors:
+
+* family-names: "Mahmoudian"
+  given-names: "Amir Mohammad"
+
+repository-code: "https://github.com/mahmmooudian/Med-AGCNet"
+url: "https://github.com/mahmmooudian/Med-AGCNet"
+
+license: MIT
+
+keywords:
+
+* medical image classification
+* deep learning
+* convolutional neural networks
+* global context
+* attention mechanisms
+* medical imaging
+* Grad-CAM
+* PyTorch
+* Med-AGCNet
+
+abstract: >
+Med-AGCNet is a PyTorch-based deep learning architecture for medical image
+classification that combines local convolutional feature extraction,
+large receptive-field modeling, global context attention, and adaptive
+feature fusion. The implementation provides a reproducible research
+pipeline including training, evaluation, baseline comparisons, ablation
+studies, threshold optimization, and Grad-CAM-based explainability.
