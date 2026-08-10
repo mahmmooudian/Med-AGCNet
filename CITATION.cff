@@ -2,11 +2,12 @@ cff-version: 1.2.0
 message: "If you use Med-AGCNet in your research, please cite this software."
 title: "Med-AGCNet: Adaptive Global Context Network for Medical Image Classification"
 type: software
+version: "1.0.0"
+date-released: 2026-08-10
 
 authors:
-
-* family-names: "Mahmoudian"
-  given-names: "Amir Mohammad"
+  - family-names: "Mahmoudian"
+    given-names: "Amir Mohammad"
 
 repository-code: "https://github.com/mahmmooudian/Med-AGCNet"
 url: "https://github.com/mahmmooudian/Med-AGCNet"
