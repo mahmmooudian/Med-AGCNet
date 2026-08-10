@@ -4,68 +4,61 @@
 
 Med-AGCNet is a deep learning architecture designed for medical image classification by combining **local feature extraction**, **large receptive-field modeling**, and **global contextual information** within a unified convolutional framework.
 
-The architecture introduces an **Adaptive Global Context Block (AGCB)** that integrates complementary feature branches and dynamically combines their representations. The implementation is designed as a reproducible research pipeline and includes model training, evaluation, explainability, baseline comparison, ablation studies, and automated result generation.
+The architecture introduces an **Adaptive Global Context Block (AGCB)** that integrates complementary feature branches and dynamically combines their representations.
+
+This repository provides a complete research-oriented implementation for:
+
+* Model training
+* Validation and testing
+* Baseline comparison
+* Ablation studies
+* Explainable AI using Grad-CAM
+* Classification threshold optimization
+* Automatic result generation
+* Experimental reproducibility
 
 ---
 
-## Overview
+## Architecture Overview
 
-Conventional convolutional neural networks are effective at extracting local visual patterns but may have limitations in modeling long-range dependencies and broader contextual relationships within medical images.
-
-Med-AGCNet addresses this limitation using three complementary mechanisms:
-
-* **Local Convolution Branch** for fine-grained spatial features
-* **Large Receptive Field Branch** for wider contextual information
-* **Global Context Attention Branch** for long-range dependencies
-
-The outputs of these branches are combined through an **Adaptive Fusion mechanism**, followed by residual feature refinement.
-
-The complete implementation is provided in:
-
-```text
-med_agcnet_research.py
-```
-
----
-
-## Architecture
-
-The overall Med-AGCNet pipeline can be summarized as:
+The Med-AGCNet architecture consists of a convolutional stem followed by multiple Adaptive Global Context Blocks.
 
 ```text
 Input Medical Image
         │
         ▼
-┌─────────────────────┐
-│      CNN Stem       │
-│ Conv + BN + GELU    │
-│     + MaxPool       │
-└─────────────────────┘
+┌─────────────────────────────┐
+│          CNN Stem           │
+│   Conv + BN + GELU          │
+│        + MaxPool            │
+└─────────────────────────────┘
         │
         ▼
-┌───────────────────────────────┐
-│ Adaptive Global Context Block │
-│                               │
-│  ┌─────────────────────────┐  │
-│  │ Local Convolution       │  │
-│  └─────────────────────────┘  │
-│                               │
-│  ┌─────────────────────────┐  │
-│  │ Large Receptive Field   │  │
-│  └─────────────────────────┘  │
-│                               │
-│  ┌─────────────────────────┐  │
-│  │ Global Context Attention│  │
-│  └─────────────────────────┘  │
-│              │                │
-│              ▼                │
-│      Adaptive Fusion          │
-│              │                │
-│        Residual Connection    │
-└───────────────────────────────┘
+┌─────────────────────────────┐
+│ Adaptive Global Context     │
+│ Block (AGCB)                │
+│                             │
+│  ┌───────────────────────┐  │
+│  │ Local Convolution     │  │
+│  └───────────────────────┘  │
+│                             │
+│  ┌───────────────────────┐  │
+│  │ Large Receptive Field │  │
+│  └───────────────────────┘  │
+│                             │
+│  ┌───────────────────────┐  │
+│  │ Global Context        │  │
+│  │ Attention             │  │
+│  └───────────────────────┘  │
+│             │               │
+│             ▼               │
+│      Adaptive Fusion        │
+│             │               │
+│      Residual Connection    │
+└─────────────────────────────┘
         │
         ▼
- Multiple Hierarchical Stages
+ Hierarchical AGCB Stages
         │
         ▼
  Global Average Pooling
@@ -77,42 +70,63 @@ Input Medical Image
  Medical Image Prediction
 ```
 
-The network processes features hierarchically through multiple AGCB stages while progressively increasing the feature representation capacity.
+---
+
+## Adaptive Global Context Block
+
+The proposed **Adaptive Global Context Block (AGCB)** contains three complementary branches.
+
+### Local Convolution Branch
+
+Captures fine-grained local patterns and spatial structures within medical images.
+
+### Large Receptive Field Branch
+
+Uses larger convolutional receptive fields to capture broader spatial relationships.
+
+### Global Context Attention Branch
+
+Models long-range dependencies and global contextual information across the feature map.
+
+### Adaptive Fusion
+
+The outputs of the branches are dynamically combined using an adaptive gating mechanism.
+
+A residual connection is then applied to preserve the original feature representation and improve information flow.
 
 ---
 
 ## Main Features
 
-The implementation provides a complete experimental pipeline including:
+### Deep Learning Architecture
 
-### Model Architecture
-
-* Med-AGCNet full architecture
+* PyTorch implementation
+* CNN-based feature extraction
 * Adaptive Global Context Blocks
-* Local convolution modeling
+* Global Context Attention
 * Large receptive-field modeling
-* Global context attention
 * Adaptive feature fusion
-* Residual feature refinement
+* Residual learning
 * Hierarchical feature extraction
 
-### Training
+### Training Pipeline
 
-* PyTorch-based training pipeline
 * AdamW optimizer
 * Learning-rate scheduling
-* Automatic CPU / CUDA / MPS device selection
-* Automatic Mixed Precision where supported
+* Automatic device detection
+* CPU support
+* CUDA GPU support
+* Apple MPS support where available
+* Automatic Mixed Precision
+* Best-model checkpointing
+* Gradient clipping
+* Early stopping
 * Deterministic experiment mode
 * Reproducible random seeds
-* Best-model checkpointing
-* Optional gradient clipping
-* Optional early stopping
-* Class imbalance handling
 
-### Class-Imbalance Strategies
+### Class-Imbalance Handling
 
-The implementation supports:
+Supported strategies:
 
 ```text
 none
@@ -131,13 +145,14 @@ weighted_loss
 
 ## Evaluation Metrics
 
-Med-AGCNet reports multiple classification metrics including:
+The implementation calculates a comprehensive set of classification metrics:
 
 * Accuracy
 * Balanced Accuracy
 * Precision
 * Recall
 * F1-Score
+* Macro F1
 * Sensitivity
 * Specificity
 * Matthews Correlation Coefficient (MCC)
@@ -145,9 +160,9 @@ Med-AGCNet reports multiple classification metrics including:
 * PR-AUC
 * Confusion Matrix
 
-For binary classification tasks, the implementation can automatically optimize the classification threshold using the validation set.
+For binary classification, the decision threshold can be automatically optimized using the validation dataset.
 
-Supported threshold optimization objectives include:
+Supported threshold optimization objectives:
 
 ```text
 balanced_accuracy
@@ -156,34 +171,33 @@ f1
 
 ---
 
-## Explainable AI — Grad-CAM
+## Explainable AI with Grad-CAM
 
-The implementation includes **Gradient-weighted Class Activation Mapping (Grad-CAM)** for model interpretability.
+Med-AGCNet includes **Gradient-weighted Class Activation Mapping (Grad-CAM)** for model interpretability.
 
-Grad-CAM can be used to visualize image regions that contributed most strongly to the model prediction.
+Grad-CAM highlights image regions that contribute most strongly to the model prediction.
 
-Generated explainability outputs include:
+The inference pipeline provides:
 
-```text
-Original Image
-Prediction
-Class Probabilities
-Inference Time
-Grad-CAM Heatmap
-Grad-CAM Overlay
-```
+* Predicted class
+* Confidence score
+* Class probabilities
+* Inference time
+* Grad-CAM heatmap
+* Grad-CAM overlay
+* Prediction metadata
 
-This functionality enables qualitative analysis of the spatial regions influencing the network's decision.
+This functionality enables qualitative investigation of the spatial regions influencing model decisions.
 
 ---
 
-## Supported Datasets
+## Supported Dataset Formats
 
 ### PneumoniaMNIST NPZ
 
-The implementation directly supports PneumoniaMNIST-style `.npz` datasets.
+The implementation directly supports PneumoniaMNIST-style `.npz` files.
 
-The NPZ file should contain:
+The dataset must contain:
 
 ```text
 train_images
@@ -200,13 +214,13 @@ Example:
 pneumoniamnist.npz
 ```
 
-The implementation automatically converts grayscale medical images into three-channel images for compatibility with the network architecture.
+Grayscale medical images are automatically converted into three-channel RGB representations for compatibility with the network architecture.
 
 ---
 
 ### ImageFolder Dataset
 
-Custom medical imaging datasets can also be organized using the following structure:
+Custom datasets can also use the standard ImageFolder structure:
 
 ```text
 dataset/
@@ -214,6 +228,7 @@ dataset/
 ├── train/
 │   ├── class_0/
 │   │   ├── image_001.png
+│   │   ├── image_002.png
 │   │   └── ...
 │   │
 │   └── class_1/
@@ -229,56 +244,52 @@ dataset/
     └── class_1/
 ```
 
-The classes are automatically detected from the folder structure.
+Class names are automatically detected from the directory structure.
 
 ---
 
 ## Synthetic Data Mode
 
-A synthetic dataset mode is included exclusively for software testing and pipeline validation.
+Synthetic data support is included only for software testing and pipeline verification.
 
-Run:
+Example:
 
 ```bash
 python med_agcnet_research.py --mode train --fake-data --epochs 1
 ```
 
-> **Important:** Synthetic/FakeData results must not be interpreted as scientific or medical evidence.
+> **Important:** Results obtained using synthetic or FakeData must not be interpreted as scientific or medical evidence.
 
-Real medical datasets must be used for experimental results reported in research publications.
+Real medical imaging datasets must be used for publishable experimental results.
 
 ---
 
 ## Baseline Models
 
-Med-AGCNet can be compared against several reference architectures:
+The implementation supports comparison with several reference architectures:
 
 * SimpleCNN
 * ResNet-18
 * EfficientNet-B0
 * Med-AGCNet
 
-The baseline comparison evaluates:
+Baseline experiments evaluate:
 
-```text
-Accuracy
-Balanced Accuracy
-Precision
-Recall
-F1-Score
-Parameter Count
-Runtime
-```
+* Accuracy
+* Balanced Accuracy
+* Precision
+* Recall
+* F1-Score
+* Parameter count
+* Runtime
 
-This provides a consistent experimental framework for comparing Med-AGCNet with conventional convolutional architectures.
+This enables consistent comparison between the proposed architecture and conventional CNN-based models.
 
 ---
 
 ## Ablation Study
 
-The implementation provides dedicated Med-AGCNet variants for component-level analysis.
-
-Available configurations include:
+Several Med-AGCNet variants are provided for component-level evaluation.
 
 ### Full Model
 
@@ -286,7 +297,7 @@ Available configurations include:
 med_agcnet_full
 ```
 
-All proposed components are enabled.
+Uses all proposed architectural components.
 
 ### Without Global Context
 
@@ -310,9 +321,9 @@ Removes the large receptive-field branch.
 med_agcnet_no_fusion
 ```
 
-Replaces adaptive fusion with non-adaptive branch aggregation.
+Replaces adaptive branch fusion with non-adaptive feature aggregation.
 
-### Local Only
+### Local-Only Variant
 
 ```text
 med_agcnet_local_only
@@ -320,13 +331,13 @@ med_agcnet_local_only
 
 Retains only local convolutional feature modeling.
 
-These variants allow the individual contribution of each architectural component to be evaluated experimentally.
+These configurations enable analysis of the contribution of each proposed architectural component.
 
 ---
 
 # Installation
 
-## 1. Clone the Repository
+## Clone the Repository
 
 ```bash
 git clone https://github.com/mahmmooudian/Med-AGCNet.git
@@ -335,9 +346,7 @@ cd Med-AGCNet
 
 ---
 
-## 2. Create a Virtual Environment
-
-Recommended:
+## Create a Virtual Environment
 
 ```bash
 python -m venv .venv
@@ -357,29 +366,27 @@ source .venv/bin/activate
 
 ---
 
-## 3. Install Dependencies
+## Install Dependencies
 
 ```bash
 pip install torch torchvision numpy matplotlib pillow scikit-learn
 ```
 
-The main dependencies are:
+Main dependencies:
 
-```text
-Python
-PyTorch
-Torchvision
-NumPy
-Matplotlib
-Pillow
-Scikit-learn
-```
+* Python
+* PyTorch
+* Torchvision
+* NumPy
+* Matplotlib
+* Pillow
+* Scikit-learn
 
 ---
 
 # Usage
 
-The entire research pipeline is available through a command-line interface.
+The research pipeline is accessible through a command-line interface.
 
 General syntax:
 
@@ -410,8 +417,6 @@ python med_agcnet_research.py \
     --data pneumoniamnist.npz
 ```
 
-This validates the dataset structure before training.
-
 ---
 
 ## Train Med-AGCNet
@@ -426,7 +431,7 @@ python med_agcnet_research.py \
     --lr 0.0001
 ```
 
-Default model:
+The default architecture is:
 
 ```text
 med_agcnet_full
@@ -434,9 +439,9 @@ med_agcnet_full
 
 ---
 
-## Specify Device
+## Select Computing Device
 
-Automatic device detection:
+Automatic detection:
 
 ```bash
 --device auto
@@ -476,7 +481,7 @@ python med_agcnet_research.py \
 
 ---
 
-## Run Baseline Comparison
+## Baseline Comparison
 
 ```bash
 python med_agcnet_research.py \
@@ -485,11 +490,9 @@ python med_agcnet_research.py \
     --comparison-epochs 10
 ```
 
-This evaluates the reference models using a common experimental pipeline.
-
 ---
 
-## Run Ablation Study
+## Ablation Study
 
 ```bash
 python med_agcnet_research.py \
@@ -498,11 +501,9 @@ python med_agcnet_research.py \
     --comparison-epochs 10
 ```
 
-This evaluates the contribution of the principal Med-AGCNet architectural components.
-
 ---
 
-## Run Inference + Grad-CAM
+## Inference and Grad-CAM
 
 ```bash
 python med_agcnet_research.py \
@@ -516,6 +517,7 @@ The inference pipeline generates:
 ```text
 Prediction
 Class probabilities
+Confidence
 Inference time
 Grad-CAM visualization
 Prediction metadata
@@ -526,11 +528,10 @@ Prediction metadata
 ## Generate Research Report
 
 ```bash
-python med_agcnet_research.py \
-    --mode report
+python med_agcnet_research.py --mode report
 ```
 
-The generated report is saved as:
+The report is generated as:
 
 ```text
 RESEARCH_REPORT.md
@@ -538,9 +539,7 @@ RESEARCH_REPORT.md
 
 ---
 
-## Run the Complete Experimental Pipeline
-
-Training, baseline comparison, ablation study, and report generation can be executed using:
+## Run Complete Experimental Pipeline
 
 ```bash
 python med_agcnet_research.py \
@@ -548,35 +547,37 @@ python med_agcnet_research.py \
     --data pneumoniamnist.npz
 ```
 
----
-
-# Important Configuration Options
-
-| Argument                 | Description                               | Default                |
-| ------------------------ | ----------------------------------------- | ---------------------- |
-| `--data`                 | Dataset path                              | `./pneumoniamnist.npz` |
-| `--output`               | Output directory                          | `./outputs_med_agcnet` |
-| `--model`                | Model architecture                        | `med_agcnet_full`      |
-| `--epochs`               | Main training epochs                      | `20`                   |
-| `--comparison-epochs`    | Baseline/Ablation epochs                  | `10`                   |
-| `--batch-size`           | Batch size                                | `32`                   |
-| `--image-size`           | Input image resolution                    | `224`                  |
-| `--lr`                   | Learning rate                             | `1e-4`                 |
-| `--weight-decay`         | Weight decay                              | `1e-4`                 |
-| `--seed`                 | Random seed                               | `42`                   |
-| `--device`               | Computing device                          | `auto`                 |
-| `--imbalance-strategy`   | Class imbalance handling                  | `weighted_loss`        |
-| `--fake-data`            | Enable synthetic testing data             | Disabled               |
-| `--no-threshold-tuning`  | Disable validation threshold optimization | Disabled               |
-| `--no-amp`               | Disable automatic mixed precision         | Disabled               |
-| `--nondeterministic`     | Disable deterministic execution           | Disabled               |
-| `--pretrained-baselines` | Use pretrained baseline models            | Disabled               |
+This can execute the main research workflow including training, comparison experiments, ablation analysis, and report generation.
 
 ---
 
-# Generated Results
+# Configuration
 
-After training, the default output structure is:
+| Argument                 | Description                     | Default                |
+| ------------------------ | ------------------------------- | ---------------------- |
+| `--data`                 | Dataset path                    | `./pneumoniamnist.npz` |
+| `--output`               | Output directory                | `./outputs_med_agcnet` |
+| `--model`                | Model architecture              | `med_agcnet_full`      |
+| `--epochs`               | Training epochs                 | `20`                   |
+| `--comparison-epochs`    | Baseline/Ablation epochs        | `10`                   |
+| `--batch-size`           | Batch size                      | `32`                   |
+| `--image-size`           | Image resolution                | `224`                  |
+| `--lr`                   | Learning rate                   | `1e-4`                 |
+| `--weight-decay`         | Weight decay                    | `1e-4`                 |
+| `--seed`                 | Random seed                     | `42`                   |
+| `--device`               | Computing device                | `auto`                 |
+| `--imbalance-strategy`   | Class imbalance strategy        | `weighted_loss`        |
+| `--fake-data`            | Enable synthetic data           | Disabled               |
+| `--no-threshold-tuning`  | Disable threshold optimization  | Disabled               |
+| `--no-amp`               | Disable mixed precision         | Disabled               |
+| `--nondeterministic`     | Disable deterministic execution | Disabled               |
+| `--pretrained-baselines` | Use pretrained baseline weights | Disabled               |
+
+---
+
+# Generated Outputs
+
+After training, the pipeline can generate:
 
 ```text
 outputs_med_agcnet/
@@ -599,7 +600,6 @@ outputs_med_agcnet/
 │       └── pr_curve.png
 │
 ├── comparisons/
-│   │
 │   ├── baseline/
 │   │   ├── baseline_results.csv
 │   │   ├── baseline_results.json
@@ -623,7 +623,7 @@ outputs_med_agcnet/
 
 # Reproducibility
 
-Reproducibility is a primary objective of this implementation.
+The implementation includes several mechanisms to improve experimental reproducibility.
 
 The pipeline records and controls:
 
@@ -631,73 +631,93 @@ The pipeline records and controls:
 * NumPy random seed
 * PyTorch random seed
 * CUDA random seed
-* Deterministic CUDA execution
-* Experiment configuration
+* Deterministic execution settings
+* Model configuration
 * Training history
-* Model checkpoint
+* Best checkpoint
 * Environment metadata
-* Evaluation predictions
+* Test-set predictions
 * Classification threshold
 
-Default seed:
+Default random seed:
 
 ```text
 42
 ```
 
-This facilitates more consistent reproduction and comparison of experimental results.
-
 ---
 
-# Research Workflow
-
-A recommended experimental workflow is:
+# Recommended Research Workflow
 
 ```text
-1. Validate Dataset
-        ↓
-2. Train Med-AGCNet
-        ↓
-3. Evaluate Test Performance
-        ↓
-4. Run Baseline Comparison
-        ↓
-5. Run Ablation Study
-        ↓
-6. Generate Grad-CAM Visualizations
-        ↓
-7. Export Metrics and Figures
-        ↓
-8. Generate Research Report
+Dataset Validation
+        │
+        ▼
+Med-AGCNet Training
+        │
+        ▼
+Validation and Threshold Selection
+        │
+        ▼
+Test Evaluation
+        │
+        ▼
+Baseline Comparison
+        │
+        ▼
+Ablation Study
+        │
+        ▼
+Grad-CAM Analysis
+        │
+        ▼
+Metrics and Figure Export
+        │
+        ▼
+Research Report
 ```
 
 ---
 
-# Project Status
+# Repository Structure
 
-The current repository contains the research implementation of Med-AGCNet developed for experimental evaluation of adaptive local-global feature modeling in medical image classification.
+```text
+Med-AGCNet/
+│
+├── med_agcnet_research.py
+└── README.md
+```
 
-The implementation is intended to support:
+Additional experimental outputs are automatically generated when the research pipeline is executed.
 
-* Architecture validation
-* Controlled experimental evaluation
+---
+
+# Code Availability
+
+The implementation of Med-AGCNet is publicly available in this repository:
+
+https://github.com/mahmmooudian/Med-AGCNet
+
+The repository provides the source code required for:
+
+* Model training
+* Evaluation
 * Baseline comparison
-* Component ablation
+* Ablation experiments
 * Explainability analysis
-* Reproducibility
-* Academic research
+* Experimental reproduction
 
 ---
 
 # Citation
 
-If you use this implementation in academic work, please cite the associated Med-AGCNet research paper.
+If you use Med-AGCNet in academic research, please cite the associated research paper.
 
-Citation information will be updated upon publication.
+Publication information will be added after formal publication.
 
 ```bibtex
-@article{medagcnet,
-  title   = {Med-AGCNet},
+@article{medagcnet2026,
+  title   = {Med-AGCNet: Adaptive Global Context Network for Medical Image Classification},
   author  = {Mahmoudian, Amir Mohammad},
   journal = {To be updated},
   year    = {2026}
@@ -706,19 +726,11 @@ Citation information will be updated upon publication.
 
 ---
 
-# Code Availability
-
-The source code associated with the Med-AGCNet research project is publicly available through this repository.
-
-The repository provides the implementation required for training, evaluation, baseline comparisons, ablation studies, explainability analysis, and reproduction of the proposed experimental workflow.
-
----
-
 # Disclaimer
 
-This project is provided **for research and educational purposes only**.
+This project is intended for **research and educational purposes only**.
 
-Med-AGCNet is not a certified medical device and should not be used for clinical diagnosis, treatment decisions, or direct patient care without appropriate clinical validation and regulatory approval.
+Med-AGCNet is not a certified medical device and should not be used directly for clinical diagnosis, treatment decisions, or patient care without appropriate clinical validation and regulatory approval.
 
 ---
 
@@ -729,10 +741,10 @@ Med-AGCNet is not a certified medical device and should not be used for clinical
 Computer Science
 Artificial Intelligence & Machine Learning Research
 
-GitHub: `@mahmmooudian`
+GitHub: [@mahmmooudian](https://github.com/mahmmooudian)
 
 ---
 
 ## License
 
-Licensing information will be added to the repository separately.
+License information will be added separately.
